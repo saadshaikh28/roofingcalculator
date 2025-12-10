@@ -209,7 +209,6 @@ function initEventListeners() {
         input.addEventListener('change', (e) => {
             const key = e.target.id.replace('extra', '').toLowerCase();
             state.extras[key] = e.target.checked;
-            // Visual feedback handled by CSS, but we could add sound or particle here
         });
     });
 
@@ -221,6 +220,45 @@ function initEventListeners() {
     document.querySelectorAll('.prev-btn').forEach(btn => {
         btn.addEventListener('click', () => prevStep());
     });
+
+    // DOT NAVIGATION: Allow clicking dots to go back
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            const targetStep = index + 1;
+            // Only allow navigating to previous steps or the current step
+            if (targetStep < state.step) {
+                goToStep(targetStep);
+            }
+        });
+    });
+}
+
+function nextStep() {
+    if (validateStep(state.step)) {
+        if (state.step < 5) {
+            state.step++;
+            updateUI();
+        }
+        if (state.step === 5) {
+            calculateFinal();
+        }
+    } else {
+        // Shake animation for error
+        gsap.to(`.wizard-step[data-step="${state.step}"]`, { x: 10, duration: 0.1, yoyo: true, repeat: 5 });
+    }
+}
+
+function prevStep() {
+    if (state.step > 1) {
+        state.step--;
+        updateUI();
+    }
+}
+
+// Helper to jump to specific step
+function goToStep(stepNumber) {
+    state.step = stepNumber;
+    updateUI();
 }
 
 function nextStep() {
@@ -260,8 +298,17 @@ function updateUI() {
 
     // 2. Update Dots
     dots.forEach((dot, idx) => {
-        if (idx + 1 <= state.step) dot.classList.add('active');
-        else dot.classList.remove('active');
+        const stepNum = idx + 1;
+        
+        // Reset classes
+        dot.classList.remove('active', 'completed');
+        
+        if (stepNum === state.step) {
+            dot.classList.add('active');
+        } else if (stepNum < state.step) {
+            // Add 'completed' class to previous steps so we can style them as clickable
+            dot.classList.add('completed');
+        }
     });
 
     // 3. Show Active Step (with GSAP fade)
@@ -269,6 +316,12 @@ function updateUI() {
         s.classList.remove('active');
         if (parseInt(s.dataset.step) === state.step) {
             s.classList.add('active');
+            
+            // Re-run animation for the new step
+            gsap.fromTo(s, 
+                { opacity: 0, y: 10 }, 
+                { opacity: 1, y: 0, duration: 0.4, clearProps: "all" }
+            );
         }
     });
 }
