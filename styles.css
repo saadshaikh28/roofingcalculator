@@ -269,6 +269,29 @@ h1, h2, h3 {
     font-size: 0.9rem;
     border: 3px solid var(--surface-glass);
     transition: all 0.3s ease;
+    /* Prevent clicking on future steps by default */
+    cursor: default; 
+    pointer-events: none;
+}
+
+/* Allow clicking on active/completed steps */
+.step-dot.active, 
+.step-dot.completed {
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.step-dot.active {
+    background: var(--accent-color);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+}
+
+/* Style for steps we've already passed (optional but good for UX) */
+.step-dot.completed {
+    background: var(--primary-light);
+    color: white;
 }
 
 .step-dot.active {
