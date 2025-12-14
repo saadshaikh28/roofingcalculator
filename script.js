@@ -1,5 +1,5 @@
 // Load client config
-const CLIENT = "mark"; // later this comes from env var
+const CLIENT = import.meta.env.CLIENT || "mark";
 let CONFIG = null;
 
 fetch(`/configs/${CLIENT}.json`)
