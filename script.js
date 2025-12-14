@@ -1,3 +1,19 @@
+// Load client config
+const CLIENT = "mark"; // later this comes from env var
+let CONFIG = null;
+
+fetch(`/configs/${CLIENT}.json`)
+  .then(res => res.json())
+  .then(config => {
+    CONFIG = config;
+    applyHeroText();
+  });
+
+function applyHeroText() {
+  document.getElementById("heroLine1").innerText = CONFIG.hero.line1;
+  document.getElementById("heroLine2").innerText = CONFIG.hero.line2;
+}
+
 /**
  * ROOFING CALCULATOR PRO
  * - GSAP Animations
